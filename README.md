@@ -8,7 +8,7 @@ EFF's Certbot with added support to work with AWS.
     export AWS_ACCESS_KEY_ID=xxx
     export AWS_SECRET_ACCESS_KEY=yyy
 
-    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws:$(VERSION) certonly \
+    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws certonly \
             --installer none --authenticator dns-route53 \
             --non-interactive \
             -d 'example.org' \
@@ -16,12 +16,17 @@ EFF's Certbot with added support to work with AWS.
 
 ### To renew ###
 
-(perhaps do this from cron)
+To renew certificates:
 
     export AWS_ACCESS_KEY_ID=xxx
     export AWS_SECRET_ACCESS_KEY=yyy
 
-    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws:$(VERSION) renew
+    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws renew
+
+When doing it from cron you probably want to suppress output:
+
+    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws renew -q
+
 
 
 #### Alternatively ####
