@@ -36,12 +36,12 @@ When doing it from cron you probably want to suppress output, by adding -q:
 
 #### Alternatively ####
 
-Consider using the aws/boto configuration file (typically
-~/.aws/config) with optional AWS_PROFILE:
+Consider using the aws/boto credential file (typically
+~/.aws/credentials) with optional AWS_PROFILE:
 
     docker run --rm -ti \
         -v /etc/letsencrypt:/etc/letsencrypt \
-        -v $HOME/.aws/config:/root/.aws/config \
+        -v $HOME/.aws/credentials:/root/.aws/credentials \
         -e AWS_PROFILE=certbot \
         cwedgwood/certbot-aws renew -q
 
