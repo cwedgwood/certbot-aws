@@ -5,40 +5,53 @@ EFF's Certbot with added support to work with AWS.
 
 ### To obtain a certificate ###
 
-    export AWS_ACCESS_KEY_ID=xxx
-    export AWS_SECRET_ACCESS_KEY=yyy
+Certificates can be obtained using the certonly command, listing each
+domain after the -d commment, for example:
 
-    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws certonly \
-            --installer none --authenticator dns-route53 \
-            --non-interactive \
-            -d 'example.org' \
-            --agree-tos -m user@example.com
+    docker run --rm -ti \
+            -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
+            -v /etc/letsencrypt:/etc/letsencrypt \
+            cwedgwood/certbot-aws certonly \
+                --installer none --authenticator dns-route53 \
+                --non-interactive \
+                -d 'example.org' \
+                --agree-tos -m user@example.com
 
 ### To renew ###
 
 To renew certificates:
 
-    export AWS_ACCESS_KEY_ID=xxx
-    export AWS_SECRET_ACCESS_KEY=yyy
+    docker run --rm -ti \
+        -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
+        -v /etc/letsencrypt:/etc/letsencrypt \
+        cwedgwood/certbot-aws renew
 
-    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws renew
+When doing it from cron you probably want to suppress output, by adding -q:
 
-When doing it from cron you probably want to suppress output:
-
-    docker run --rm -ti -v /etc/letsencrypt:/etc/letsencrypt cwedgwood/certbot-aws renew -q
-
+    docker run --rm -ti \
+        -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
+        -v /etc/letsencrypt:/etc/letsencrypt \
+        cwedgwood/certbot-aws renew -q
 
 
 #### Alternatively ####
 
-Consider:
+Consider using the aws/boto configuration file (typically
+~/.aws/config) with optional AWS_PROFILE:
 
-    -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy
+    docker run --rm -ti \
+        -v /etc/letsencrypt:/etc/letsencrypt \
+        -v $HOME/.aws/config:/root/.aws/config \
+        -e AWS_PROFILE=certbot \
+        cwedgwood/certbot-aws renew -q
 
-or
+## Testing AWS/route53 access is working ##
 
-    -v /etc/letsencrypt/aws-config:/root/.aws/
+In some cases it's not clear that access to AWS/route53 is working.
+Test the boto library by doing:
 
-perhaps even
-
-    -v /etc/letsencrypt/aws-config:/root/.aws/ -E AWS_PROFILE=certbot-profile
+    docker run --rm -ti \
+        -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
+        -v /etc/letsencrypt:/etc/letsencrypt \
+        --entrypoint=/bin/sh
+        cwedgwood/certbot-aws -c aws "route53 list-hosted-zones"
