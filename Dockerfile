@@ -6,11 +6,7 @@
 ARG version=latest
 FROM certbot/certbot:$version
 
-# if these are defined in the calling env, pass them to the container
-ENV AWS_ACCESS_KEY_ID=
-ENV AWS_SECRET_ACCESS_KEY=
-ENV AWS_PROFILE=
-
+# route53 needs this, you can override if you really must
 ENV AWS_DEFAULT_REGION=us-east-1
 ENV TERM=dumb
 
