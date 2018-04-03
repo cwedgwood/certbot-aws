@@ -7,7 +7,6 @@ FROM certbot/certbot:v0.22.2
 
 # route53 needs this, you can override if you really must
 ENV AWS_DEFAULT_REGION=us-east-1
-ENV TERM=dumb
 
 # awscli not needed but useful for debugging
 RUN apk add --no-cache git && pip install certbot-dns-route53 awscli && rm -rf /root/.cache/

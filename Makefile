@@ -2,7 +2,7 @@
 default: build certonly
 
 build:
-	sudo docker build -t cwedgwood/certbot-aws .
+	sudo docker build -t cwedgwood/certbot-aws . | cat
 	sudo docker images
 
 test:
