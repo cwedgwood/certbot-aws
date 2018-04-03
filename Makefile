@@ -1,17 +1,15 @@
 
-VERSION:=v0.22.2
-
-default: build test
+default: build certonly
 
 build:
-	sudo docker build --build-arg version=$(VERSION) -t cwedgwood/certbot-aws:$(VERSION) .
+	sudo docker build -t cwedgwood/certbot-aws .
 	sudo docker images
 
 test:
-	sudo docker run --rm -ti cwedgwood/certbot-aws:$(VERSION) renew
+	sudo docker run --rm -ti cwedgwood/certbot-aws renew
 
 certonly:
-	sudo docker run --rm -ti cwedgwood/certbot-aws:$(VERSION) certonly \
+	sudo docker run --rm -ti cwedgwood/certbot-aws certonly \
 		--installer none --authenticator dns-route53 \
 		--non-interactive \
 		--dry-run \
