@@ -6,7 +6,7 @@ build:
 	sudo docker images
 
 test:
-	sudo docker run --rm -ti cwedgwood/certbot-aws renew
+	sudo docker run --rm -ti cwedgwood/certbot-aws --version
 
 certonly:
 	sudo docker run --rm -ti cwedgwood/certbot-aws certonly \
