@@ -5,7 +5,7 @@ build:
 	sudo docker build -t cwedgwood/certbot-aws . | cat
 	sudo docker images
 
-test:
+test: build
 	sudo docker run --rm -ti cwedgwood/certbot-aws --version
 
 certonly:
