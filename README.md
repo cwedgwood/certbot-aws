@@ -4,9 +4,9 @@ EFF's Certbot packaged with support for Amazon Route53.  Obtain from
 https://hub.docker.com/r/cwedgwood/certbot-aws/.
 
 This container is useful for obtaining certificates using
-[DNS-01](https://tools.ietf.org/html/draft-ietf-acme-acme-01) (for
-example to get wildcard certificates) and also renewal without having
-to install certbot (and it's numerous dependencies).
+[DNS-01](https://tools.ietf.org/html/draft-ietf-acme-acme-11#section-8.4)
+(for example to get wildcard certificates) and also renewal without
+having to install certbot (and it's numerous dependencies).
 
 
 ### To obtain a certificate ###
