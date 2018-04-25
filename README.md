@@ -17,6 +17,7 @@ domain after the -d comment, for example:
     docker run --rm -ti \
             -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
             -v /etc/letsencrypt:/etc/letsencrypt \
+            -v /var/log/letsencrypt:/var/log/letsencrypt \
             cwedgwood/certbot-aws certonly \
                 --installer none --authenticator dns-route53 --non-interactive \
                 -d 'example.org' \
@@ -32,6 +33,7 @@ To renew certificates:
     docker run --rm -ti \
         -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
         -v /etc/letsencrypt:/etc/letsencrypt \
+        -v /var/log/letsencrypt:/var/log/letsencrypt \
         cwedgwood/certbot-aws renew
 
 When doing it from cron you probably want to suppress output, by adding -q:
@@ -39,6 +41,7 @@ When doing it from cron you probably want to suppress output, by adding -q:
     docker run --rm -ti \
         -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
         -v /etc/letsencrypt:/etc/letsencrypt \
+        -v /var/log/letsencrypt:/var/log/letsencrypt \
         cwedgwood/certbot-aws renew -q
 
 
@@ -50,6 +53,7 @@ Consider using the aws/boto credential file (typically
     docker run --rm -ti \
         -v /etc/letsencrypt:/etc/letsencrypt \
         -v $HOME/.aws/credentials:/root/.aws/credentials \
+        -v /var/log/letsencrypt:/var/log/letsencrypt \
         -e AWS_PROFILE=certbot \
         cwedgwood/certbot-aws renew -q
 
@@ -61,5 +65,6 @@ Test the boto library by doing:
     docker run --rm -ti \
         -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
         -v /etc/letsencrypt:/etc/letsencrypt \
+        -v /var/log/letsencrypt:/var/log/letsencrypt \
         --entrypoint=/bin/sh
         cwedgwood/certbot-aws -c aws "route53 list-hosted-zones"
