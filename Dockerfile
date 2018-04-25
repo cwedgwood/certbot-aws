@@ -11,5 +11,5 @@ ENV AWS_DEFAULT_REGION=us-east-1
 # awscli not needed but useful for debugging
 RUN apk add --no-cache git && pip install certbot-dns-route53 awscli && rm -rf /root/.cache/
 
-# [re]install josepy with fixed to suppress deprecation warnings
-RUN pip uninstall -y josepy && pip install -v git+https://github.com/mgedmin/josepy.git@fix-crypto-deprecation-warnings
+# install josepy with fixes to suppress deprecation warnings
+RUN pip install josepy==v1.1.0 --upgrade
