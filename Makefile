@@ -1,4 +1,8 @@
 
+# for testing the 'certonly' target it is sometimes useful to have a
+# 'real domain'; put this down in the file 'test-domain'
+TSTDOMAIN=$(shell cat test-domain || echo example.com)
+
 default: build certonly
 
 build:
@@ -11,11 +15,13 @@ test: build
 certonly:
 	sudo docker run --rm -ti \
 		-v $(HOME)/.aws/credentials:/root/.aws/credentials \
+		-v $(PWD)/dryrun-letsencrypt-etc:/etc/letsencrypt \
+		-v $(PWD)/dryrun-letsencrypt-log:/var/log/letsencrypt \
 		cwedgwood/certbot-aws certonly \
 		    --installer none --authenticator dns-route53 \
 		    --non-interactive --dry-run \
-		    -d 'example.org' -d '*.example.org' \
-		    --agree-tos -m user@example.com
+		    -d '$(TSTDOMAIN)' -d '*.$(TSTDOMAIN)' \
+		    --agree-tos -m 'postmaster@$(TSTDOMAIN)'
 
 clean:
 	rm -f *~
