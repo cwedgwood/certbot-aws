@@ -24,7 +24,10 @@ domain after the -d comment, for example:
                 --agree-tos -m user@example.com
 
 It is important to persist `/etc/letsencrypt` from inside the
-container - it contains the files you want to make use of.
+container - it contains the files you want to make use of such as your
+certificates.  It's a good idea to also persist `/var/log/letsencrypt`
+as well, those files will contain useful information when things go
+wrong.
 
 ### To renew ###
 
@@ -66,5 +69,5 @@ Test the boto library by doing:
         -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
         -v /etc/letsencrypt:/etc/letsencrypt \
         -v /var/log/letsencrypt:/var/log/letsencrypt \
-        --entrypoint=/bin/sh
+        --entrypoint=/bin/sh \
         cwedgwood/certbot-aws -c aws "route53 list-hosted-zones"
