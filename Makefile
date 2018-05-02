@@ -9,12 +9,13 @@ test: build
 	sudo docker run --rm -ti cwedgwood/certbot-aws --version
 
 certonly:
-	sudo docker run --rm -ti cwedgwood/certbot-aws certonly \
-		--installer none --authenticator dns-route53 \
-		--non-interactive \
-		--dry-run \
-		-d '*.example.org' -d '*.example.org' \
-		--agree-tos -m user@example.com
+	sudo docker run --rm -ti \
+		-v $(HOME)/.aws/credentials:/root/.aws/credentials \
+		cwedgwood/certbot-aws certonly \
+		    --installer none --authenticator dns-route53 \
+		    --non-interactive --dry-run \
+		    -d 'example.org' -d '*.example.org' \
+		    --agree-tos -m user@example.com
 
 clean:
 	rm -f *~
