@@ -6,7 +6,7 @@ TSTDOMAIN=$(shell cat test-domain || echo example.com)
 default: build certonly
 
 build:
-	sudo docker build -t cwedgwood/certbot-aws . | cat
+	sudo docker build -t cwedgwood/certbot-aws .
 	sudo docker images
 
 test: build
