@@ -25,5 +25,6 @@ certonly:
 
 clean:
 	rm -f *~
+	sudo rm -rf dryrun-letsencrypt-etc dryrun-letsencrypt-log
 
 .PHONY: default build test certonly clean
