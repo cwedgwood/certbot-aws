@@ -6,14 +6,14 @@ TSTDOMAIN=$(shell cat test-domain || echo example.com)
 default: build certonly
 
 build:
-	docker build -t cwedgwood/certbot-aws .
+	docker build -q -t cwedgwood/certbot-aws .
 	docker images
 
 test: build
-	docker run --rm -ti cwedgwood/certbot-aws --version
+	docker run --rm cwedgwood/certbot-aws --version
 
-certonly:
-	docker run --rm -ti \
+certonly: build
+	TERM= docker run --rm \
 		-v $(HOME)/.aws/credentials:/root/.aws/credentials \
 		-v $(PWD)/dryrun-letsencrypt-etc:/etc/letsencrypt \
 		-v $(PWD)/dryrun-letsencrypt-log:/var/log/letsencrypt \
