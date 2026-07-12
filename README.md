@@ -1,73 +1,49 @@
-## cwedgwood/certbot-aws ##
+# certbot-aws (deprecated — use the official image)
 
-EFF's Certbot packaged with support for Amazon Route53.  Obtain from
-https://hub.docker.com/r/cwedgwood/certbot-aws/.
+**This repo is archived. Do not use it to build anything.**
 
-This container is useful for obtaining certificates using
-[DNS-01](https://tools.ietf.org/html/draft-ietf-acme-acme-11#section-8.4)
-(for example to get wildcard certificates) and also renewal without
-having to install certbot (and it's numerous dependencies).
+It existed to build a Docker image (`cwedgwood/certbot-aws`) packaging EFF
+Certbot with the Amazon **Route53** DNS-01 plugin, back around 2018 when no
+public image bundled that plugin.
 
+That gap is closed. EFF now publishes the official, multi-arch,
+continuously-updated image:
 
-### To obtain a certificate ###
+> **[`certbot/dns-route53`](https://hub.docker.com/r/certbot/dns-route53)**
 
-Certificates can be obtained using the certonly command, listing each
-domain after the -d comment, for example:
+It bundles the `dns-route53` plugin (and `boto3`) and is rebuilt within hours
+of each Certbot release — so there is nothing left for this repo to build or
+publish.
 
-    docker run --rm -ti \
-            -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
-            -v /etc/letsencrypt:/etc/letsencrypt \
-            -v /var/log/letsencrypt:/var/log/letsencrypt \
-            cwedgwood/certbot-aws certonly \
-                --installer none --authenticator dns-route53 --non-interactive \
-                -d 'example.org' \
-                --agree-tos -m user@example.com
+## Migration
 
-It is important to persist `/etc/letsencrypt` from inside the
-container - it contains the files you want to make use of such as your
-certificates.  It's a good idea to also persist `/var/log/letsencrypt`
-as well, those files will contain useful information when things go
-wrong.
+The old `cwedgwood/certbot-aws` Docker Hub image is **deprecated and stale**
+(its Docker Hub automated build stopped when Docker Hub retired free automated
+builds in 2021).
 
-### To renew ###
+On whatever host actually runs certbot, repoint the image name and pin a tag:
 
-To renew certificates:
+    -  cwedgwood/certbot-aws            renew ...
+    +  certbot/dns-route53:v5.7.0       renew ...
 
-    docker run --rm -ti \
-        -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
-        -v /etc/letsencrypt:/etc/letsencrypt \
-        -v /var/log/letsencrypt:/var/log/letsencrypt \
-        cwedgwood/certbot-aws renew
+Everything else (arguments, credentials, mounted `/etc/letsencrypt`) is
+unchanged — the official image exposes the same certbot CLI. See the official
+[Certbot user guide](https://eff-certbot.readthedocs.io/) and the
+[image tags](https://hub.docker.com/r/certbot/dns-route53/tags).
 
-When doing it from cron you probably want to suppress output, by adding -q:
+## Optional: local smoke test
 
-    docker run --rm -ti \
-        -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
-        -v /etc/letsencrypt:/etc/letsencrypt \
-        -v /var/log/letsencrypt:/var/log/letsencrypt \
-        cwedgwood/certbot-aws renew -q
+The `Makefile` here is the only remaining useful bit: it runs a `--dry-run`
+`certonly` against the official image using your `~/.aws/credentials`, to
+confirm Route53 access and the DNS-01 flow work before issuing real
+certificates. It is host-agnostic — run it from anywhere with AWS credentials.
 
+Put a domain whose zone is in your Route53 account in a file named
+`test-domain`, then:
 
-#### Alternatively ####
+    make            # pull + dry-run certonly for $(test-domain) and *.$(test-domain)
+    make version    # print the official image's certbot version
+    make clean      # remove the local dryrun-* directories
 
-Consider using the aws/boto credential file (typically
-~/.aws/credentials) with optional AWS_PROFILE:
-
-    docker run --rm -ti \
-        -v /etc/letsencrypt:/etc/letsencrypt \
-        -v $HOME/.aws/credentials:/root/.aws/credentials \
-        -v /var/log/letsencrypt:/var/log/letsencrypt \
-        -e AWS_PROFILE=certbot \
-        cwedgwood/certbot-aws renew -q
-
-## Testing AWS/route53 access is working ##
-
-In some cases it's not clear that access to AWS/route53 is working.
-Test the boto library by doing:
-
-    docker run --rm -ti \
-        -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy \
-        -v /etc/letsencrypt:/etc/letsencrypt \
-        -v /var/log/letsencrypt:/var/log/letsencrypt \
-        --entrypoint=/bin/sh \
-        cwedgwood/certbot-aws -c aws "route53 list-hosted-zones"
+The container runs as your uid/gid, so the `dryrun-*` output directories are
+owned by you (no `sudo` needed to clean up).
